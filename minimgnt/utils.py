@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import functools
 import numpy as np
@@ -39,3 +39,4 @@ def convert_twotailed_pval_to_zscore(input_snp):
     pval = input_snp[:, 2]
     zscores = np.sqrt(sp.stats.chi2.ppf(1 - pval, 1))
     return np.concatenate((input_snp[:, :2], zscores[:, None], input_snp[:, 2:None]), axis=1)
+

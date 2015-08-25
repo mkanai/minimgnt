@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import numpy as np
 import pandas as pd
@@ -80,6 +80,10 @@ def minimgnt(args):
             # remove NaN
             input_snp = input_snp[np.isfinite(input_snp[:, 2])]
             input_snp = convert_twotailed_pval_to_zscore(input_snp)
+            n_snps2 = len(input_snp)
+            logger.log('Converted {N} SNP p-values to z-score ({M} SNPs were removed due to NA)\n\n',
+                       N=n_snps2, M=n_snps - n_snps2)
+            n_snps = n_snps2
         else:
             raise ValueError('p-values must be 0 <= p <= 1')
 
@@ -105,9 +109,9 @@ def minimgnt(args):
     # output results
     n_genes = len(refseq_gene)
     gene_result = pd.DataFrame({'GENE': refseq_gene.iloc[:, 4], 'P': corr_score[:n_genes]})
-    gene_result.to_csv(args.out + '.gene.tsv', sep='\t', na_rep='NA', header=False, index=False)
+    gene_result.to_csv(args.out + '.gene.pval.txt', sep='\t', na_rep='NA', header=False, index=False, float_format='%.6g')
     mir_result = pd.DataFrame({'MIR': mirbase_mir.iloc[:, 4], 'P': corr_score[n_genes:None]})
-    mir_result.to_csv(args.out + '.mir.tsv', sep='\t', na_rep='NA', header=False, index=False)
+    mir_result.to_csv(args.out + '.mir.pval.txt', sep='\t', na_rep='NA', header=False, index=False, float_format='%.6g')
 
     logger.log('Results were written to {F}.{{gene, mir}}.pval.txt\n\n', F=args.out)
     logger.log('Analysis finished at {T}.\n', T=time.ctime())
@@ -148,3 +152,4 @@ if __name__ == '__main__':
         raise ValueError('--boundary-downstream must be a positive intenger.')
 
     minimgnt(args)
+

@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import numpy as np
 import scipy as sp
@@ -75,3 +75,4 @@ def calc_corr_gene_score(confounders, uncorr_score):
                                        np.mean(residuals[cond_residuals_finite]),
                                        np.std(residuals[cond_residuals_finite]))
     return (corr_score, residuals)
+
