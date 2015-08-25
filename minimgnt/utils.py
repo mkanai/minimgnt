@@ -35,8 +35,15 @@ def remove_HLA_region(input_gene, HLA_start, HLA_end):
     return input_gene[cond_not_HLA]
 
 
+def extend_gene_site(input_gene, boundr_upstr, boundr_downstr):
+    strand = np.equal(input_gene[:, 3], 0)
+    input_gene[:, 1] -= np.where(strand, boundr_upstr, boundr_downstr)
+    input_gene[:, 2] += np.where(strand, boundr_downstr, boundr_upstr)
+
+    return input_gene
+
+
 def convert_twotailed_pval_to_zscore(input_snp):
     pval = input_snp[:, 2]
     zscores = np.sqrt(sp.stats.chi2.ppf(1 - pval, 1))
     return np.concatenate((input_snp[:, :2], zscores[:, None], input_snp[:, 2:None]), axis=1)
-

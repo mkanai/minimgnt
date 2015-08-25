@@ -55,6 +55,7 @@ def minimgnt(args):
 
     # rbind gene and mir
     all_gene_mir = np.vstack((refseq_gene.iloc[:, :4].values, mirbase_mir.iloc[:, :4].values))
+    all_gene_mir = extend_gene_site(all_gene_mir, args.boundr_upstr, args.boundr_downstr)
 
     # load other files
     pruned_snps = pd.read_csv(PRUNED_SNPS_FILEPATH, header=None, delim_whitespace=True).values
@@ -89,14 +90,13 @@ def minimgnt(args):
 
     # calc uncorrected score from local SNP association z-scores Best SNP per gene scoring metric
     uncorr_score, n_snps_per_gene, n_genes_score_nan, n_indep_snps_per_gene, n_hotspots_per_gene = calc_uncorr_gene_score(
-        all_gene_mir, input_snp, pruned_snps, hotspot_boundaries, args.boundr_upstr, args.boundr_downstr)
+        all_gene_mir, input_snp, pruned_snps, hotspot_boundaries)
     logger.log('Calculated uncorrected \'gene association score\' from best SNP association z-scores per gene\n')
     logger.log('{N} out of {T} genes/mirs were not assigned the score.\n\n',
                N=n_genes_score_nan, T=n_genes + n_mirs)
 
     # calc corrected score according to confounders using step-wise multivariate linear regression analysis
-    interval = args.boundr_upstr + args.boundr_downstr
-    gene_size_plus_interval_kb = (all_gene_mir[:, 2] - all_gene_mir[:, 1] + interval) / 1000.0
+    gene_size_plus_interval_kb = (all_gene_mir[:, 2] - all_gene_mir[:, 1]) / 1000.0
 
     confounders = np.vstack((gene_size_plus_interval_kb,
                              n_snps_per_gene / gene_size_plus_interval_kb,
