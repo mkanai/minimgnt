@@ -90,7 +90,7 @@ def minimgnt(args):
 
     # calc uncorrected score from local SNP association z-scores Best SNP per gene scoring metric
     uncorr_score, n_snps_per_gene, n_genes_score_nan, n_indep_snps_per_gene, n_hotspots_per_gene = calc_uncorr_gene_score(
-        all_gene_mir, input_snp, pruned_snps, hotspot_boundaries)
+        all_gene_mir, input_snp, pruned_snps, hotspot_boundaries, args.cpus)
     logger.log('Calculated uncorrected \'gene association score\' from best SNP association z-scores per gene\n')
     logger.log('{N} out of {T} genes/mirs were not assigned the score.\n\n',
                N=n_genes_score_nan, T=n_genes + n_mirs)
@@ -123,6 +123,7 @@ if __name__ == '__main__':
                         help='GWAS SNP score filename containing one SNP information per row. '
                              '[columns] (1) rsID, (2) chromosome, (3) bp, (4) z-score (optional), (5) p-value.')
     parser.add_argument('--out', default='minimgnt', type=str, help='output filename prefix. (default: minimgnt)')
+    parser.add_argument('-j', '--cpus', default=1, type=int, help='a number of cpus used for computation')
     # parser.add_argument('--config', default=None, type=str, help='configuration file.')
     parser.add_argument('--remove-HLA', dest='remove_HLA', action='store_true',
                         help='use this flag to specify to remove genes in HLA region from a result.')
