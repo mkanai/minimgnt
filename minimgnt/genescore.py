@@ -5,6 +5,7 @@ import numpy as np
 import scipy as sp
 import scipy.stats
 import six
+from concurrent.futures import ThreadPoolExecutor
 
 from utils import *
 from stepwisefit import *
@@ -43,13 +44,14 @@ def _calc_uncorr_gene_score(gene, input_gene, input_snp, pruned_snps, hotspots):
 
 
 def calc_uncorr_gene_score(input_gene, input_snp, pruned_snps, hotspots, n_cpus):
-    if n_cpus > 1:
-        from tomorrow import threads
-        f = threads(n_cpus)(_calc_uncorr_gene_score)
-    else:
-        f = _calc_uncorr_gene_score
+    f = lambda gene: _calc_uncorr_gene_score(gene, input_gene, input_snp, pruned_snps, hotspots)
 
-    ret = (f(gene, input_gene, input_snp, pruned_snps, hotspots) for gene in six.moves.range(len(input_gene)))
+    if n_cpus > 1:
+        with ThreadPoolExecutor(max_workers=n_cpus) as e:
+            ret = e.map(f, six.moves.range(len(input_gene)))
+    else:
+        ret = (f(gene) for gene in six.moves.range(len(input_gene)))
+
     uncorr_score, n_snps_per_gene, n_genes_score_nan, n_indep_snps_per_gene, n_hotspots_per_gene = [np.array(x) for x in zip(*ret)]
 
     return (np.fabs(uncorr_score), n_snps_per_gene, np.sum(n_genes_score_nan), n_indep_snps_per_gene, n_hotspots_per_gene)

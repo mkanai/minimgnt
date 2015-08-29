@@ -145,9 +145,9 @@ if __name__ == '__main__':
         raise ValueError('--out is required.')
     if args.cpus > 1:
         try:
-            import tomorrow
+            import concurrent.futures
         except ImportError:
-            raise ImportError('For multithreading, please install "tomorrow" package via `pip install tomorrow`')
+            raise ImportError('For multithreading, please install "futures" package via `pip install futures`')
     if args.HLA_start < 0:
         raise ValueError('--HLA-start must be a positive intenger.')
     if args.HLA_end < 0:
