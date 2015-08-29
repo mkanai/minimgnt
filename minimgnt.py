@@ -6,7 +6,6 @@ import pandas as pd
 import argparse
 import os
 import time
-import yaml
 
 from minimgnt.genescore import *
 from minimgnt.utils import *
@@ -139,7 +138,6 @@ if __name__ == '__main__':
                              '[columns] (1) rsID, (2) chromosome, (3) bp, (4) z-score (optional), (5) p-value.')
     parser.add_argument('--out', default='minimgnt', type=str, help='output filename prefix. (default: minimgnt)')
     parser.add_argument('-j', '--cpus', default=1, type=int, help='a number of cpus used for computation')
-    # parser.add_argument('--config', default=None, type=str, help='configuration file.')
     parser.add_argument('--not-remove-HLA', dest='remove_HLA', action='store_false',
                         help='do not remove genes in HLA region from a result. (default: False)')
     parser.add_argument('--HLA-start', default=25000000, type=int,
