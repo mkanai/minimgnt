@@ -36,7 +36,8 @@ def remove_HLA_region(input_gene, HLA_start, HLA_end):
 
 
 def extend_gene_site(input_gene, boundr_upstr, boundr_downstr):
-    strand = np.equal(input_gene[:, 3], 0)
+    # whether positive strand or not
+    strand = np.equal(input_gene[:, 3], 1)
     input_gene[:, 1] -= np.where(strand, boundr_upstr, boundr_downstr)
     input_gene[:, 2] += np.where(strand, boundr_downstr, boundr_upstr)
 
