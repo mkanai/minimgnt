@@ -23,9 +23,13 @@ HOTSPOT_BOUNDARIES_FILEPATH = os.path.join(BASEDIR, 'hotspot_boundaries_b37_hg19
 
 def minimgnt(args):
     logger = Logger(args.out + '.log')
-    logger.log('# minimgnt (miniMAGENTA) ver. {V} written by Masahiro Kanai.\n', V=__version__)
-    logger.log('#\n')
-    logger.log('# original MAGENTA software were written by Ayellet Segre, Altshuler and Daly Labs.\n\n')
+    logger.log('****************************************************************\n')
+    logger.log('* minimgnt (miniMAGENTA) ver. {V} written by Masahiro Kanai.\n', V=__version__)
+    logger.log('* https://github.com/mkanai/minimgnt\n')
+    logger.log('*\n')
+    logger.log('* MAGENTA was written by Ayellet Segre, Altshuler and Daly Labs.\n')
+    logger.log('* https://www.broadinstitute.org/mpg/magenta/\n')
+    logger.log('****************************************************************\n\n')
 
     logger.log('Analysis started at {T}\n\n', T=time.ctime())
 

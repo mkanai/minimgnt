@@ -11,7 +11,7 @@ import sys
 class Logger(object):
 
     # bufsize=1 to write in a moment
-    def __init__(self, filename, bufsize=-1):
+    def __init__(self, filename, bufsize=1):
         self.file = open(filename, 'w', bufsize)
 
     def log(self, msg, *args, **kwargs):
