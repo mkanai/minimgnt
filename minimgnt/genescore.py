@@ -41,7 +41,7 @@ def calc_uncorr_gene_score(input_gene, input_snp, pruned_snps, hotspots):
         # use p-value to find most significant SNP
         idx_min_pval = np.nanargmin(input_snp[cond_snps_near_gene][:, 3])
 
-        uncorr_score[gene] = input_snp[idx_min_pval, 2]
+        uncorr_score[gene] = input_snp[cond_snps_near_gene][idx_min_pval, 2]
 
         # count number of independent SNPs per gene
         n_indep_snps_per_gene[gene] = np.sum(logical_and(np.equal(pruned_snps[:, 0], input_gene[gene, 0]),
