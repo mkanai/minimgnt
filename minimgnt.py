@@ -31,6 +31,7 @@ def minimgnt(args):
     logger.log('* https://www.broadinstitute.org/mpg/magenta/\n')
     logger.log('****************************************************************\n\n')
 
+    logger.log('Call: {S}\n', S=' '.join(sys.argv))
     logger.log('Analysis started at {T}\n\n', T=time.ctime())
 
     # load gene/mir files
@@ -73,7 +74,12 @@ def minimgnt(args):
     #         1: position
     #         2: z-score (optional)
     #         3: p-value
-    input_snp = pd.read_csv(args.score_filename, header=None, delim_whitespace=True).iloc[:, 1:None].values
+    input_snp = pd.read_csv(args.score_filename, header=None, delim_whitespace=True)
+    if args.rsid:
+        input_snp = input_snp.iloc[:, 1:].values
+    else:
+        input_snp = input_snp.values
+
     n_snps, n_c = input_snp.shape
     logger.log('{N} SNPs loaded from {F}\n\n', N=n_snps, F=args.score_filename)
 
@@ -113,8 +119,13 @@ def minimgnt(args):
     # output results
     n_genes = len(refseq_gene)
     gene_result = pd.DataFrame({'GENE': refseq_gene.iloc[:, 4], 'P': corr_score[:n_genes]})
+    mir_result = pd.DataFrame({'MIR': mirbase_mir.iloc[:, 4], 'P': corr_score[n_genes:]})
+
+    if args.remove_NA:
+        gene_result = gene_result.dropna()
+        mir_result = mir_result.dropna()
+
     gene_result.to_csv(args.out + '.gene.pval.txt', sep='\t', na_rep='NA', header=False, index=False, float_format='%.6g')
-    mir_result = pd.DataFrame({'MIR': mirbase_mir.iloc[:, 4], 'P': corr_score[n_genes:None]})
     mir_result.to_csv(args.out + '.mir.pval.txt', sep='\t', na_rep='NA', header=False, index=False, float_format='%.6g')
 
     logger.log('Results were written to {F}.{{gene, mir}}.pval.txt\n\n', F=args.out)
@@ -122,18 +133,15 @@ def minimgnt(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='Calculate the corrected gene association score from a GWAS result, according to MAGENTA\'s method.')
     parser.add_argument('score_filename', type=str,
                         help='GWAS SNP score filename containing one SNP information per row. '
                              '[columns] (1) rsID, (2) chromosome, (3) bp, (4) z-score (optional), (5) p-value.')
     parser.add_argument('--out', default='minimgnt', type=str, help='output filename prefix. (default: minimgnt)')
     parser.add_argument('-j', '--cpus', default=1, type=int, help='a number of cpus used for computation')
     # parser.add_argument('--config', default=None, type=str, help='configuration file.')
-    parser.add_argument('--remove-HLA', dest='remove_HLA', action='store_true',
-                        help='use this flag to specify to remove genes in HLA region from a result.')
     parser.add_argument('--not-remove-HLA', dest='remove_HLA', action='store_false',
-                        help='use this flag to specify not to remove genes in HLA region from a result.')
-    parser.set_defaults(remove_HLA=True)
+                        help='do not remove genes in HLA region from a result. (default: False)')
     parser.add_argument('--HLA-start', default=25000000, type=int,
                         help='start position of HLA region in chr6. (default: 25,000,000)')
     parser.add_argument('--HLA-end', default=35000000, type=int,
@@ -142,11 +150,13 @@ if __name__ == '__main__':
                         help='added distance (bp) upstream to gene\'s start position. (default: 110,000)')
     parser.add_argument('--boundary-downstream', dest='boundr_downstr', default=40000, type=int,
                         help='added distance (bp) downstream to gene\'s end position. (default: 40,000)')
+    parser.add_argument('--remove-NA', action='store_true',
+                        help='remove genes with NA score from the output (default: False)')
+    parser.add_argument('--no-rsid', dest='rsid', action='store_false',
+                        help='use this flag when a score file doesn\'t contain a rsID column. (default: False)')
 
     args = parser.parse_args()
 
-    if args.out is None:
-        raise ValueError('--out is required.')
     if args.cpus > 1:
         try:
             import concurrent.futures
