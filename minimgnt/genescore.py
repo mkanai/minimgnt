@@ -10,7 +10,6 @@ from tomorrow import threads
 from utils import *
 from stepwisefit import *
 
-@threads(4)
 def _calc_uncorr_score(gene, input_gene, input_snp, pruned_snps, hotspots):
     # find local snps given a gene
     cond_snps_near_gene = logical_and(np.equal(input_snp[:, 0], input_gene[gene, 0]),
@@ -45,7 +44,8 @@ def _calc_uncorr_score(gene, input_gene, input_snp, pruned_snps, hotspots):
 
 
 def calc_uncorr_gene_score(input_gene, input_snp, pruned_snps, hotspots, n_cpus):
-    ret = (_calc_uncorr_score(gene, input_gene, input_snp, pruned_snps, hotspots) for gene in six.moves.range(len(input_gene)))
+    f = threads(n_cpus)(_calc_uncorr_score)
+    ret = (f(gene, input_gene, input_snp, pruned_snps, hotspots) for gene in six.moves.range(len(input_gene)))
     uncorr_score, n_snps_per_gene, n_genes_score_nan, n_indep_snps_per_gene, n_hotspots_per_gene = [np.array(x) for x in zip(*ret)]
 
     return (np.fabs(uncorr_score), n_snps_per_gene, np.sum(n_genes_score_nan), n_indep_snps_per_gene, n_hotspots_per_gene)
