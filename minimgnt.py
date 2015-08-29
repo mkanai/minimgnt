@@ -91,7 +91,7 @@ def minimgnt(args):
     # calc uncorrected score from local SNP association z-scores Best SNP per gene scoring metric
     uncorr_score, n_snps_per_gene, n_genes_score_nan, n_indep_snps_per_gene, n_hotspots_per_gene = calc_uncorr_gene_score(
         all_gene_mir, input_snp, pruned_snps, hotspot_boundaries, args.cpus)
-    logger.log('Calculated uncorrected \'gene association score\' from best SNP association z-scores per gene\n')
+    logger.log('Calculated uncorrected "gene association score" from best SNP association z-scores per gene\n')
     logger.log('{N} out of {T} genes/mirs were not assigned the score.\n\n',
                N=n_genes_score_nan, T=n_genes + n_mirs)
 
@@ -104,7 +104,7 @@ def minimgnt(args):
                              n_hotspots_per_gene / gene_size_plus_interval_kb)).T
 
     corr_score, residuals = calc_corr_gene_score(confounders, uncorr_score)
-    logger.log('Calculated corrected \'gene association score\' using step-wise multivariate linear regression analysis\n\n')
+    logger.log('Calculated corrected "gene association score" using step-wise multivariate linear regression analysis\n\n')
 
     # output results
     n_genes = len(refseq_gene)
@@ -143,6 +143,11 @@ if __name__ == '__main__':
 
     if args.out is None:
         raise ValueError('--out is required.')
+    if args.cpus > 1:
+        try:
+            import tomorrow
+        except ImportError:
+            raise ImportError('For multithreading, please install "tomorrow" package via `pip install tomorrow`')
     if args.HLA_start < 0:
         raise ValueError('--HLA-start must be a positive intenger.')
     if args.HLA_end < 0:
