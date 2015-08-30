@@ -7,8 +7,8 @@ import scipy.stats
 import six
 from concurrent.futures import ThreadPoolExecutor
 
-from utils import *
-from stepwisefit import *
+from .utils import *
+from .stepwisefit import *
 
 def _calc_uncorr_gene_score(gene, input_gene, input_snp, pruned_snps, hotspots):
     # find local snps given a gene

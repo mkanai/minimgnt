@@ -11,13 +11,14 @@ from minimgnt.genescore import *
 from minimgnt.utils import *
 
 
-__version__ = '0.1'
+__version__ = '0.9'
 
 BASEDIR = os.path.dirname(__file__)
-REFSEQ_GENE_FILEPATH = os.path.join(BASEDIR, 'AllHumanGeneChrPosStrandNames_RefSeq_hg19_072111.txt')
-MIRBASE_MIR_FILEPATH = os.path.join(BASEDIR, 'AllHumanMiRNAChrPosStrandNames_miRBase_hg19_062413.txt')
-PRUNED_SNPS_FILEPATH = os.path.join(BASEDIR, 'CEU_HapMap_pruned_SNPs_ChrNumPos_hg19_072111.txt')
-HOTSPOT_BOUNDARIES_FILEPATH = os.path.join(BASEDIR, 'hotspot_boundaries_b37_hg19_072111.txt')
+DATADIR = os.path.join(BASEDIR, 'minimgnt', 'data')
+REFSEQ_GENE_FILEPATH = os.path.join(DATADIR, 'AllHumanGeneChrPosStrandNames_RefSeq_hg19_072111.txt')
+MIRBASE_MIR_FILEPATH = os.path.join(DATADIR, 'AllHumanMiRNAChrPosStrandNames_miRBase_hg19_062413.txt')
+PRUNED_SNPS_FILEPATH = os.path.join(DATADIR, 'CEU_HapMap_pruned_SNPs_ChrNumPos_hg19_072111.txt')
+HOTSPOT_BOUNDARIES_FILEPATH = os.path.join(DATADIR, 'hotspot_boundaries_b37_hg19_072111.txt')
 
 
 def minimgnt(args):
